@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AI Summarizer and chatbox</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        min-width: 500px;
+        min-height: 300px;
+        padding: 15px;
+      }
+
+
+      body[data-theme="light"] {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+body[data-theme="dark"] {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+body[data-theme="dark"] button {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+body[data-theme="dark"] #copy-btn {
+  background-color: #2e8b57;
+}
+
+body[data-theme="dark"] #result {
+  background-color: #1e1e1e;
+  border-color: #444;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+      h2 {
+        color: inherit; 
+        margin-bottom: 15px;
+      }
+
+      .options {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      button {
+        padding: 8px 15px;
+        background-color: #4285f4;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      button:hover {
+        background-color: #3367d6;
+      }
+
+      #copy-btn {
+        background-color: #34a853;
+      }
+
+      #copy-btn:hover {
+        background-color: #2e8b57;
+      }
+
+      #summary-type {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+      }
+
+      #result {
+        margin-top: 15px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        min-height: 150px;
+        max-height: 400px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        line-height: 1.5;
+      }
+
+      #result ul {
+        padding-left: 20px;
+      }
+
+      #result li {
+        margin-bottom: 10px;
+      }
+
+      .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 150px;
+      }
+
+      .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h2>AI Summary</h2>
+    <label style="float: right; font-size: 14px;">
+  <input type="checkbox" id="dark-mode-toggle" />
+  Dark Mode
+</label>
+
+
+    <div style="margin-bottom: 10px;">
+    <label>
+    <input type="radio" name="mode" value="summarize" checked />
+    Summarize Page
+    </label>
+    <label style="margin-left: 15px;">
+    <input type="radio" name="mode" value="ask" />
+    Ask a Question
+    </label>
+    </div>
+
+    <!-- Summarize Section -->
+<div id="summarize-section">
+  <select id="summary-type">
+    <option value="brief">Brief Summary</option>
+    <option value="detailed">Detailed Summary</option>
+    <option value="bullets">Bullet Points</option>
+  </select>
+  <button id="summarize">Summarize This Page</button>
+</div>
+
+    <!-- Ask Section -->
+<div id="ask-section" style="display: none;">
+  <input
+    type="text"
+    id="user-question"
+    placeholder="Type your question here"
+    style="width: 100%; padding: 8px; margin-bottom: 10px;"
+  />
+  <button id="ask-question" style="width: 100%;">Ask Gemini</button>
+</div>
+
+<div id="history" style="margin-top: 20px; font-size: 0.9em;"></div>
+<button id="clear-history">Clear Chat</button>
+    
+    <!-- Output -->
+   <div id="result" style="margin-top: 15px;">
+   your answer will be shown here
+   </div>
+
+   <!-- Copy button -->
+   <button id="copy-btn">Copy</button>
+
+    
+    <script src="popup.js"></script>
+  </body>
+</html>
