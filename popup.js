@@ -42,7 +42,7 @@ document.getElementById("summarize").addEventListener("click", () =>{
 
     //GET USER'S API KEY
     chrome.storage.sync.get(['geminiApiKey'], ({geminiApiKey}) =>{
-        if(!geminiApiKey) {
+        if(!result.geminiApiKey) {
             resultDiv.textContent = "no api key set. click gear icon to add one";
             return;
         }
@@ -55,15 +55,22 @@ document.getElementById("summarize").addEventListener("click", () =>{
             tab.id, // id of the active tab
             { type: "GET_ARTICLE_TEXT" }, // sends the message which content.js is listening for 
             async ( response ) => { // this is the call back from content.js
-                const text = response?.text; 
-                if(!text) {
-                    resultDiv.textContent = "couldn't extract text from this page";
-                    return;
+              console.log("📩 Response from content.js:", response);
+                //const text = response?.text; 
+                if (!response || typeof response.text !== "string") {
+                  resultDiv.textContent = "could not extract text from this page (keep going you got it!)";
+                  return;
+                }
+                const text = response.text.trim();
+
+                if (text.length < 100) {
+                  resultDiv.textContent = "Not enough readable content on this page.";
+                  return;
                 }
                 
                 // SEND TEXT TO GEMINI
                 try {
-                    const summary= await getGeminiSummary(text, summaryType, geminiApiKey);
+                    const summary= await getGeminiSummary(response.text, summaryType, result.geminiApiKey);
                     resultDiv.textContent = summary;
                 } catch (error) {
                       resultDiv.innerText = `Error: ${
@@ -91,7 +98,7 @@ async function getGeminiSummary(rawText, type, apiKey) {
     // whatever type of summary is needed, save it to prompt else default is set to brief
     const prompt = promptMap[type] || promptMap.brief;
 
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
         {
             method: "POST",
             headers: {"Content-Type": "application/json" },
@@ -138,7 +145,7 @@ document.getElementById("ask-question").addEventListener("click", () => {
       const prompt = `${context}\n\nQ: ${userInput}\nA:`;
 
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiApiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -164,7 +171,21 @@ document.getElementById("ask-question").addEventListener("click", () => {
   });
 });
 
-
+// curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent" \
+  // -H 'Content-Type: application/json' \
+  // -H 'X-goog-api-key: AIzaSyCE47ZnH_3anyTWnd75gdRqV76A8BSRG-M' \
+  // -X POST \
+  // -d '{
+  //   "contents": [
+  //     {
+  //       "parts": [
+  //         {
+  //           "text": "Explain how AI works in a few words"
+  //         }
+  //       ]
+  //     }
+  //   ]
+  // }'
 
 
 document.addEventListener("DOMContentLoaded", () => {
